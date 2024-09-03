@@ -83,6 +83,18 @@ def discrepancy(weightsA, weightsB):
     return d / S_t
 
 
+def post_prune_model(model, amount):
+    # Pruning
+    for _, module in model.named_modules():
+        if isinstance(module, nn.Liner):
+            tprune.l1_unstructured(module, name='weight', amount=amount)
+
+    # Remove the pruning reparametrizations to make the model explicitly sparse
+    for _, module in model.named_modules():
+        if isinstance(module, nn.Liner):
+            tprune.remove(module, 'weight')
+    return model
+
 def get_dataset(indexes, train, split=True):
 
     apply_transform = transforms.ToTensor()

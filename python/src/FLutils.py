@@ -5,6 +5,7 @@ from torchvision import datasets, transforms
 import torch.nn.functional as F
 import numpy as np
 from torch.utils.data import DataLoader, Dataset, random_split
+import torch.nn.utils.prune as tprune
 
 dataset_download_path = "build/dataset"
 
@@ -86,12 +87,12 @@ def discrepancy(weightsA, weightsB):
 def post_prune_model(model, amount):
     # Pruning
     for _, module in model.named_modules():
-        if isinstance(module, nn.Liner):
+        if isinstance(module, nn.Linear):
             tprune.l1_unstructured(module, name='weight', amount=amount)
 
     # Remove the pruning reparametrizations to make the model explicitly sparse
     for _, module in model.named_modules():
-        if isinstance(module, nn.Liner):
+        if isinstance(module, nn.Linear):
             tprune.remove(module, 'weight')
     return model
 

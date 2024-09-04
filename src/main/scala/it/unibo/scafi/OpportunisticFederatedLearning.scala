@@ -31,7 +31,7 @@ class OpportunisticFederatedLearning
     boundedDouble
   )
   private def actualMetric: (py.Dynamic) => () => Double = (model) => {
-    val models = includingSelf.reifyField(nbr(model))
+    val models = includingSelf.reifyField(nbr(postPrune(model)))
     val evaluations = models.map { case (id, model) =>
       id -> evalModel(model, trainData)._2
     }
@@ -146,6 +146,9 @@ class OpportunisticFederatedLearning
     freshNN.load_state_dict(averageWeights)
     freshNN
   }
+
+  private def postPrune(model: py.Dynamic): py.Dynamic =
+    utils.post_prune_model(model, 0.4)
 
   private def evalModel(
       myModel: py.Dynamic,

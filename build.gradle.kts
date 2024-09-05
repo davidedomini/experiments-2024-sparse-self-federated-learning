@@ -197,6 +197,8 @@ File(rootProject.rootDir.path + "/src/main/yaml").listFiles()
                 """.trimIndent(),
                 "--override",
                 "launcher: { parameters: { batch: [], autoStart: false } }",
+                "--verbosity",
+                "error"
             )
         }
         runAllGraphic.dependsOn(graphic)
@@ -221,7 +223,10 @@ File(rootProject.rootDir.path + "/src/main/yaml").listFiles()
                         parallelism: 1,
                     }
                 }
-            """.trimIndent())
+            """.trimIndent(),
+            "--verbosity",
+            "error"
+            )
         }
         runAllBatch.dependsOn(batch)
     }

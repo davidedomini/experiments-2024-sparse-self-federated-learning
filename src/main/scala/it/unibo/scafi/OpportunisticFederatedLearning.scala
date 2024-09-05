@@ -147,8 +147,10 @@ class OpportunisticFederatedLearning
     freshNN
   }
 
-  private def postPrune(model: py.Dynamic): py.Dynamic =
-    utils.post_prune_model(model, 0.4)
+  private def postPrune(model: py.Dynamic): py.Dynamic = {
+    println(sparsity)
+    utils.post_prune_model(model, sparsity)
+  }
 
   private def evalModel(
       myModel: py.Dynamic,

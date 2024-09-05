@@ -29,4 +29,6 @@ object Sensors {
 
   val movable = "Movable"
   val sameLeader = "SameLeader"
+
+  val sparsity = "Sparsity"
 }

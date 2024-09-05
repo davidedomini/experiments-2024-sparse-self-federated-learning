@@ -7,7 +7,7 @@ _constants:
 variables:
   seed: &seed
     min: 0
-    max: 9
+    max: 5
     step: 1
     default: 3
   epochs: &epochs
@@ -17,6 +17,9 @@ variables:
   areas: &areas
     type: ArbitraryVariable
     parameters: [9, [9, 5, 3]]
+  sparsity: &sparsity
+    type: ArbitraryVariable
+    parameters: [0.5, [0.5, 0.9, 9.5, 0.99] ]
   batchSize: &batchSize
     formula: 64
   samplePerArea: &samplePerArea
@@ -26,7 +29,7 @@ variables:
     formula: >
       true
   dataFraction: &dataFraction
-    formula: 0.2
+    formula: 0.4
   longSideNodes: &longSideNodes
     formula: 7
   shortSideNodes: &shortSideNodes
@@ -89,6 +92,8 @@ deployments:
         concentration: *aggregateLocalEvery
       - molecule: BatchSize
         concentration: *batchSize
+      - molecule: Sparsity
+        concentration: *sparsity
     programs: *gradient
 
 terminate:

@@ -91,9 +91,9 @@ def post_prune_model(model, amount):
             tprune.l1_unstructured(module, name='weight', amount=amount)
 
     # Remove the pruning reparametrizations to make the model explicitly sparse
-    for _, module in model.named_modules():
-        if isinstance(module, nn.Linear):
-            tprune.remove(module, 'weight')
+    # for _, module in model.named_modules():
+    #     if isinstance(module, nn.Linear):
+    #         tprune.remove(module, 'weight')
     return model
 
 def get_dataset(indexes, train, split=True):
@@ -136,15 +136,16 @@ def dataset_to_nodes_partitioning(areas: int, random_seed: int, shuffling: bool 
 
     return index_mapping
 
-result = dataset_to_nodes_partitioning(2, 42, True, 0.2)
-print(len(result[0]))
+
 def init_cnn(seed):
     torch.manual_seed(seed)
     model = CNNMnist()
+    model = post_prune_model(model, 0.5)
     torch.save(model.state_dict(), f'networks/initial_model_seed_{seed}')
 
 def cnn_loader(seed):
     model = CNNMnist()
+    #model = post_prune_model(model, 0.0)
     model.load_state_dict(torch.load(f'networks/initial_model_seed_{seed}'))
     return model
 

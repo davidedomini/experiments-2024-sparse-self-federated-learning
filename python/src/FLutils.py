@@ -90,7 +90,7 @@ def post_prune_model(model, amount):
         if isinstance(module, nn.Linear):
             tprune.l1_unstructured(module, name='weight', amount=amount)
 
-    Remove the pruning reparametrizations to make the model explicitly sparse
+    #Remove the pruning reparametrizations to make the model explicitly sparse
     for _, module in model.named_modules():
         if isinstance(module, nn.Linear):
             tprune.remove(module, 'weight')

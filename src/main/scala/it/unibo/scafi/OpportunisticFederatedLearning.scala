@@ -4,7 +4,6 @@ import it.unibo.alchemist.model.scafi.ScafiIncarnationForAlchemist._
 import interop.PythonModules._
 import me.shadaj.scalapy.py
 import me.shadaj.scalapy.py.{PyQuote, SeqConverters}
-import Sensors._
 import it.unibo.alchemist.model.layers.Dataset
 import it.unibo.alchemist.model.scafi.ScafiIncarnationForAlchemist
 
@@ -40,9 +39,10 @@ class OpportunisticFederatedLearning
   }
 
   private lazy val epochs = sense[Int](Sensors.epochs)
+  private lazy val sparsity = sense[Double](Sensors.sparsity)
   private lazy val batch_size = sense[Int](Sensors.batchSize)
   private lazy val aggregateLocalEvery = sense[Int](Sensors.aggregateLocalEvery)
-  private lazy val threshold = sense[Double](lossThreshold)
+  private lazy val threshold = sense[Double](Sensors.lossThreshold)
 
   override def main(): Any = {
     rep((localModel, localModel, 1)) { case (local, global, tick) =>
@@ -82,7 +82,7 @@ class OpportunisticFederatedLearning
       node.put(Sensors.sharedModel, sample(sharedModel))
       node.put("Federation", leader % 9)
       node.put(Sensors.areaId, areaId)
-      if (isAggregator) { node.put(models, info) }
+      if (isAggregator) { node.put(Sensors.models, info) }
       node.put(Sensors.potential, potential)
       node.put(Sensors.modelsCount, info.length)
       node.put(Sensors.neighbourhoodMetric, neighbourhoodMetric)
@@ -147,10 +147,8 @@ class OpportunisticFederatedLearning
     freshNN
   }
 
-  private def postPrune(model: py.Dynamic): py.Dynamic = {
-    println(sparsity)
+  private def postPrune(model: py.Dynamic): py.Dynamic = 
     utils.post_prune_model(model, sparsity)
-  }
 
   private def evalModel(
       myModel: py.Dynamic,

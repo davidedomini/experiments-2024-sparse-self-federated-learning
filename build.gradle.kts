@@ -87,7 +87,7 @@ val pythonVirtualEnvName = "env"
 val createVirtualEnv by tasks.register<Exec>("createVirtualEnv") {
     group = alchemistGroup
     description = "Creates a virtual environment for Python"
-    commandLine("python3", "-m", "venv", pythonVirtualEnvName)
+    commandLine("python3.10", "-m", "venv", pythonVirtualEnvName)
 }
 
 val createPyTorchNetworkFolder by tasks.register<Exec>("createPyTorchNetworkFolder") {
@@ -207,7 +207,7 @@ File(rootProject.rootDir.path + "/src/main/yaml").listFiles()
             maxHeapSize = "${minOf(heap.toInt(), Runtime.getRuntime().availableProcessors() * taskSize)}m"
             File("data").mkdirs()
             val batch = if(capitalizedName.contains("Baseline")) {
-                "seed, areas"
+                "seed, areas, sparsity"
             } else if (capitalizedName.contains("Movement")) {
                 "seed"
             } else {

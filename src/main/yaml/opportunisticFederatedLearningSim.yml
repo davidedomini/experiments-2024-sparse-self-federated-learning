@@ -19,7 +19,7 @@ variables:
     parameters: [9, [9, 5, 3]]
   sparsity: &sparsity
     type: ArbitraryVariable
-    parameters: [0.5, [0.9, 0.95, 0.99] ]
+    parameters: [0.5, [0.5, 0.9, 0.95, 0.99] ]
   batchSize: &batchSize
     formula: 64
   samplePerArea: &samplePerArea
@@ -64,7 +64,7 @@ _gradient: &gradient
 
 monitors:
   - type: it.unibo.alchemist.model.monitors.DistributedTestSetEvaluation
-    parameters: [*seed, *epochs, *aggregateLocalEvery, *areas, *dataShuffle, *lossThreshold]
+    parameters: [*seed, *epochs, *aggregateLocalEvery, *areas, *dataShuffle, *lossThreshold, *sparsity]
 
 layers:
   - type: PhenomenaDistribution

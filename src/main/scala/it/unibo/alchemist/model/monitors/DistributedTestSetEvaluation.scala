@@ -15,7 +15,8 @@ class DistributedTestSetEvaluation[P <: Position[P]](
     aggregateLocalEvery: Int,
     areas: Int,
     dataShuffle: Boolean,
-    lossThreshold: Double
+    lossThreshold: Double,
+    sparsityLevel: Double,
 ) extends TestSetEvaluation[P](seed) {
 
   override def finished(

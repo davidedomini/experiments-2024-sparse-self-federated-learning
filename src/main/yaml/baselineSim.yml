@@ -53,7 +53,7 @@ _gradient: &gradient
 
 layers:
   - type: PhenomenaDistribution
-    parameters: [0, 0, *longSideNodes, *shortSideNodes, *areas, *samplePerArea, *dataShuffle, *dataFraction, *seed, true]
+    parameters: [0, 0, *longSideNodes, *shortSideNodes, *areas, *samplePerArea, *dataShuffle, *dataFraction, *seed, true, ]
     molecule: Phenomena
 
 monitors:

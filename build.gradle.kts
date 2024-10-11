@@ -211,7 +211,7 @@ File(rootProject.rootDir.path + "/src/main/yaml").listFiles()
             } else if (capitalizedName.contains("Movement")) {
                 "seed"
             } else {
-                "seed, areas, lossThreshold"
+                "seed, areas, lossThreshold, sparsity"
             }
             args("--override",
                 """

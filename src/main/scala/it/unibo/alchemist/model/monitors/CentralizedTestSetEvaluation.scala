@@ -8,8 +8,13 @@ import it.unibo.scafi.interop.PythonModules.utils
 import me.shadaj.scalapy.py.{PyQuote, SeqConverters}
 import me.shadaj.scalapy.py
 
-class CentralizedTestSetEvaluation[P <: Position[P]](seed: Double, epochs: Int, areas: Int, dataShuffle: Boolean)
-    extends TestSetEvaluation[P](seed) {
+class CentralizedTestSetEvaluation[P <: Position[P]](
+    seed: Double,
+    epochs: Int,
+    areas: Int,
+    dataShuffle: Boolean,
+    sparsityLevel: Double,
+) extends TestSetEvaluation[P](seed) {
 
   override def finished(environment: Environment[Any, P], time: Time, step: Long): Unit = {
     println("Starting evaluation...")
@@ -20,7 +25,7 @@ class CentralizedTestSetEvaluation[P <: Position[P]](seed: Double, epochs: Int, 
     TestDataExporter.CSVExport(
       List(accuracy),
       s"data-test-baseline/test_accuracy_seed-${seed}_epochs-${epochs}" +
-        s"_areas-${areas}_batchSize-${batch_size}_dataShuffle-${dataShuffle}"
+        s"_areas-${areas}_batchSize-${batch_size}_sparsity-${sparsityLevel}_dataShuffle-${dataShuffle}"
     )
     cleanPythonObjects(environment)
   }

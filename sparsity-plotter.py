@@ -1,0 +1,123 @@
+import matplotlib.pyplot as plt
+from pathlib import Path
+import pandas as pd
+import numpy as np
+import matplotlib
+import glob
+import re
+
+
+def extractVariableNames(filename):
+    """
+    Gets the variable names from the Alchemist data files header.
+
+    Parameters
+    ----------
+    filename : str
+        path to the target file
+
+    Returns
+    -------
+    list of list
+        A matrix with the values of the csv file
+
+    """
+    with open(filename, 'r') as file:
+        dataBegin = re.compile(r'\d')
+        lastHeaderLine = ''
+        for line in file:
+            if dataBegin.match(line[0]):
+                break
+            else:
+                lastHeaderLine = line
+        if lastHeaderLine:
+            regex = re.compile(r' (?P<varName>\S+)')
+            return regex.findall(lastHeaderLine)
+        return []
+
+
+def openCsv(path):
+    """
+    Converts an Alchemist export file into a list of lists representing the matrix of values.
+
+    Parameters
+    ----------
+    path : str
+        path to the target file
+
+    Returns
+    -------
+    list of list
+        A matrix with the values of the csv file
+
+    """
+    regex = re.compile(r'\d')
+    with open(path, 'r') as file:
+        lines = filter(lambda x: regex.match(x[0]), file.readlines())
+        return [[float(x) for x in line.split()] for line in lines]
+
+
+def load_data_from_csv(path, threshold, sparsity):  
+    files = glob.glob(f'{path}experiment*sparsity-{sparsity}_*lossThreshold-{threshold}*.csv')
+    dataframes = []
+    print(f'For thershold {threshold} and sparsity {sparsity} loaded {len(files)} files')
+    for file in files:
+        areas_value = int([part for part in file.split('_') if part.startswith("areas-")][0].split('-')[1])
+        columns = extractVariableNames(file)
+        data = openCsv(file)
+        df = pd.DataFrame(data, columns=columns)
+        df['Areas'] = areas_value
+        dataframes.append(df)
+    return dataframes
+
+
+def add_seed(data):
+    for seed, df in enumerate(data):
+        df['seed'] = seed
+    return data
+
+
+def plot(data, sparsity, threshold, out_dir):
+    areas_values =[3, 5, 9]
+    viridis = plt.colormaps['viridis']
+    indexes = np.linspace(0.1, 0.9, len(areas_values))
+
+    for i, areas in enumerate(areas_values):
+        data_filtered = data[data['Areas'] == areas]
+        df_grouped = data_filtered.groupby('time')['AreaCount'].agg(['mean', 'std'])
+        time = df_grouped.index
+        mean = df_grouped['mean']
+        std = df_grouped['std']
+        plt.plot(time, mean, color=viridis(indexes[i]), label=f'Areas = {areas}')
+        plt.fill_between(time, mean - std, mean + std, color=viridis(indexes[i]), alpha=0.2)
+
+    plt.title(f'$\psi$ {sparsity}, $\sigma$ = {threshold}')
+    plt.xlabel("Time")
+    plt.ylabel(f"$|F|$")
+    plt.legend(title="Areas")
+    plt.tight_layout()
+    # plt.grid(True)
+    plt.savefig(f'{out_dir}/sparsity-{sparsity}-threshold {threshold}.pdf')
+    plt.close()
+
+
+matplotlib.rcParams.update({'axes.titlesize': 18})
+matplotlib.rcParams.update({'axes.labelsize': 18})
+matplotlib.rcParams.update({'xtick.labelsize': 15})
+matplotlib.rcParams.update({'ytick.labelsize': 15})
+plt.rcParams.update({'text.usetex': True})
+plt.rc('text.latex', preamble=r'\usepackage{amsmath,amssymb,amsfonts}')
+
+charts_dir = 'charts/sparsity/'
+Path(charts_dir).mkdir(parents=True, exist_ok=True)
+path = 'data/'
+threshold = [20.0, 40.0, 80.0]
+sparsity = [0.5, 0.9, 0.95, 0.99]
+
+for t in threshold:
+    for s in sparsity:
+        data = load_data_from_csv(path, t, s)
+        data = add_seed(data)
+        data = pd.concat(data, ignore_index=True)
+        data = data.dropna()
+        plot(data, s, t, charts_dir)

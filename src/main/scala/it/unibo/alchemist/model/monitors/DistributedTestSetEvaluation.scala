@@ -16,7 +16,7 @@ class DistributedTestSetEvaluation[P <: Position[P]](
     areas: Int,
     dataShuffle: Boolean,
     lossThreshold: Double,
-    sparsityLevel: Double,
+    sparsityLevel: Double
 ) extends TestSetEvaluation[P](seed) {
 
   override def finished(
@@ -43,7 +43,7 @@ class DistributedTestSetEvaluation[P <: Position[P]](
       s"data-test/test_accuracy_seed-${seed}_epochs-${epochs}" +
         s"_aggregateLocalEvery-${aggregateLocalEvery}_areas-${areas}" +
         s"_batchSize-${batch_size}_dataShuffle-${dataShuffle}" +
-        s"_lossThreshold-${lossThreshold}"
+        s"_sparsity-${sparsityLevel}_lossThreshold-${lossThreshold}"
     )
     cleanPythonObjects(environment)
   }

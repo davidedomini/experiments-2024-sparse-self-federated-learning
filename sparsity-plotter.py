@@ -76,15 +76,30 @@ def add_seed(data):
         df['seed'] = seed
     return data
 
+def metric_to_symbol(metric):
+    symbol = ''
+    if 'TrainLoss' in metric:
+        symbol = '$NLL - Train$'
+    elif 'ValidationLoss' in metric:
+        symbol = '$NLL - Validation$'
+    elif 'ValidationAccuracy' in metric:
+        symbol = '$Accuracy - Validation$'
+    elif 'AreaCount' in metric:
+        symbol = '$|F|$'
+    elif 'AreaCorrectness' in metric:
+        symbol = r'$\Diamond$'
+    else:
+        symbol = metric
+    return symbol
 
-def plot(data, sparsity, threshold, out_dir):
+def plot(data, sparsity, threshold, metric, out_dir):
     areas_values =[3, 5, 9]
     viridis = plt.colormaps['viridis']
     indexes = np.linspace(0.1, 0.9, len(areas_values))
 
     for i, areas in enumerate(areas_values):
         data_filtered = data[data['Areas'] == areas]
-        df_grouped = data_filtered.groupby('time')['AreaCount'].agg(['mean', 'std'])
+        df_grouped = data_filtered.groupby('time')[metric].agg(['mean', 'std'])
         time = df_grouped.index
         mean = df_grouped['mean']
         std = df_grouped['std']
@@ -93,11 +108,11 @@ def plot(data, sparsity, threshold, out_dir):
 
     plt.title(f'$\psi$ {sparsity}, $\sigma$ = {threshold}')
     plt.xlabel("Time")
-    plt.ylabel(f"$|F|$")
+    plt.ylabel(metric_to_symbol(metric))
     plt.legend(title="Areas")
     plt.tight_layout()
     # plt.grid(True)
-    plt.savefig(f'{out_dir}/sparsity-{sparsity}-threshold {threshold}.pdf')
+    plt.savefig(f'{out_dir}/{metric}-sparsity-{sparsity}-threshold {threshold}.pdf')
     plt.close()
 
 
@@ -113,11 +128,16 @@ Path(charts_dir).mkdir(parents=True, exist_ok=True)
 path = 'data/'
 threshold = [20.0, 40.0, 80.0]
 sparsity = [0.5, 0.9, 0.95, 0.99]
-
+metrics = ['AreaCount', 'AreaCorrectness', 'TrainLoss[mean]', 'ValidationLoss[mean]', 'ValidationAccuracy[mean]']
 for t in threshold:
     for s in sparsity:
         data = load_data_from_csv(path, t, s)
         data = add_seed(data)
         data = pd.concat(data, ignore_index=True)
         data = data.dropna()
-        plot(data, s, t, charts_dir)
+        for metric in metrics:
+            plot(data, s, t, metric, charts_dir)
+    
+
+
+    

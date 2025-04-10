@@ -103,32 +103,37 @@ def plot(data, sparsity, threshold, metric, out_dir):
         time = df_grouped.index
         mean = df_grouped['mean']
         std = df_grouped['std']
-        plt.plot(time, mean, color=viridis(indexes[i]), label=f'Areas = {areas}')
+        plt.plot(time, mean, color=viridis(indexes[i]), label=f'{areas}', linewidth=2)
         plt.fill_between(time, mean - std, mean + std, color=viridis(indexes[i]), alpha=0.2)
 
-    plt.title(f'$\psi$ {sparsity}, $\sigma$ = {threshold}')
+    plt.title(f'$\psi$ = {sparsity}')
     plt.xlabel("Time")
     plt.ylabel(metric_to_symbol(metric))
     plt.legend(title="Areas")
+    plt.ylim(0, 1)
     plt.tight_layout()
     # plt.grid(True)
     plt.savefig(f'{out_dir}/{metric}-sparsity-{sparsity}-threshold {threshold}.pdf')
     plt.close()
 
 
-matplotlib.rcParams.update({'axes.titlesize': 18})
-matplotlib.rcParams.update({'axes.labelsize': 18})
-matplotlib.rcParams.update({'xtick.labelsize': 15})
-matplotlib.rcParams.update({'ytick.labelsize': 15})
+matplotlib.rcParams.update({'axes.titlesize': 30})
+matplotlib.rcParams.update({'axes.labelsize': 28})
+matplotlib.rcParams.update({'xtick.labelsize': 25})
+matplotlib.rcParams.update({'ytick.labelsize': 25})
+matplotlib.rcParams.update({'legend.fontsize': 20})
+matplotlib.rcParams.update({'legend.title_fontsize': 22})
 plt.rcParams.update({'text.usetex': True})
 plt.rc('text.latex', preamble=r'\usepackage{amsmath,amssymb,amsfonts}')
 
-charts_dir = 'charts/sparsity/'
+
+charts_dir = 'charts/sparsity-gfl/'
 Path(charts_dir).mkdir(parents=True, exist_ok=True)
 path = 'data/'
 threshold = [20.0, 40.0, 80.0]
 sparsity = [0.5, 0.9, 0.95, 0.99]
-metrics = ['AreaCount', 'AreaCorrectness', 'TrainLoss[mean]', 'ValidationLoss[mean]', 'ValidationAccuracy[mean]']
+# metrics = ['AreaCount', 'AreaCorrectness', 'TrainLoss[mean]', 'ValidationLoss[mean]', 'ValidationAccuracy[mean]']
+metrics = ['AreaCount', 'ValidationAccuracy[mean]']
 for t in threshold:
     for s in sparsity:
         data = load_data_from_csv(path, t, s)
